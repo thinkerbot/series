@@ -1,29 +1,38 @@
-# Series
+Series
+==============================
 
-TODO: Write a gem description
+Generate series data.
 
-## Installation
+Description
+---------------
 
-Add this line to your application's Gemfile:
+The series gem provides tools to generate series data from the command line or
+in a script using a pluggable architecture (meaning you can add your own
+series generators easily).
 
-    gem 'series'
+Usage
+---------------
 
-And then execute:
+Call the series executable:
 
-    $ bundle
+    $ series geometric 1 2
+    1
+    2
+    4
+    8
+    16
+    32
+    ...
 
-Or install it yourself as:
+To list the available series, or to get help on an individual series:
+
+    $ series --list
+    $ series --help
+    $ series geometric --help
+
+Installation
+---------------
+
+Series is available as a gem.
 
     $ gem install series
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
