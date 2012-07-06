@@ -18,4 +18,8 @@ Gem::Specification.new do |gem|
   gem.name          = "series"
   gem.require_paths = ["lib"]
   gem.version       = Series::VERSION
+
+  gem.add_development_dependency('rake', '~> 0.9.2')
+  gem.add_development_dependency('bundler', '~> 1.0')
+  gem.add_development_dependency('rdoc', '~> 3.9')
 end
