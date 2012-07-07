@@ -36,8 +36,19 @@ options:
     exit
   end
 
-  opts.on("-n NUM", "number of values to print") do |num|
-    n = num.to_i
+  opts.on("-n NUM", "number of values to print") do |input|
+    case input
+    when /^\d+$/
+      n = input.to_i
+    when /^(\d+)..(\d+)$/
+      x = $1.to_i
+      n = $2.to_i
+    when /^(\d+)...(\d+)$/
+      x = $1.to_i
+      n = $2.to_i - 1
+    else
+      raise "invalid value for -n: #{input.inspect}"
+    end
   end
 
   opts.on("-x", "print x values") do

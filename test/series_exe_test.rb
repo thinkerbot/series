@@ -45,6 +45,30 @@ class SeriesExeTest < Test::Unit::TestCase
     }
   end
 
+  def test_n_option_allows_range_of_x
+    assert_script %{
+      $ series geometric -n 2..5
+      4
+      8
+      16
+    }
+  end
+
+  def test_n_option_allows_exclusive_range_of_x
+    assert_script %{
+      $ series geometric -n 2...5
+      4
+      8
+    }
+  end
+
+  def test_n_option_raises_error_for_invalid_input
+    assert_script %{
+      $ series geometric -n abc    # [1]
+      invalid value for -n: "abc"
+    }
+  end
+
   #
   # -x test
   #
