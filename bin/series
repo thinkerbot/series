@@ -10,8 +10,7 @@ if ARGV.empty?
   ARGV << '-h'
 end
 
-x = 0
-n = nil
+driver = nil
 format = "%2$s\n"
 
 OptionParser.new do |opts|
@@ -37,15 +36,20 @@ options:
   end
 
   opts.on("-n NUM", "number of values to print") do |input|
-    case input
+    driver = case input
+    when "-"
+      require "series/drivers/stream"
+      Series::Drivers::Stream.new
     when /^\d+$/
-      n = input.to_i - 1
+      Series.counter(0, input.to_i - 1)
     when /^(-?\d+)..(-?\d+)$/
       x = $1.to_i
       n = $2.to_i
+      Series.counter(x, n)
     when /^(-?\d+)...(-?\d+)$/
       x = $1.to_i
       n = $2.to_i - 1
+      Series.counter(x, n)
     else
       raise "invalid value for -n: #{input.inspect}"
     end
@@ -63,12 +67,11 @@ args = ARGV.dup
 ARGV.clear
 
 series = Series.init(*args)
-if n.nil? || x <= n
-  while n.nil? || x <= n
-    y = series[x]
-    print format % [x, y] 
-    x += 1
-  end
+driver ||= Series.counter
+
+driver.each do |x|
+  y = series[x]
+  print format % [x, y]
 end
 
 rescue Interrupt

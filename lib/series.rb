@@ -1,5 +1,6 @@
 require "series/version"
 require "series/utils"
+require "series/drivers/counter"
 
 module Series
   module_function
@@ -19,6 +20,10 @@ module Series
       list[name] = {:require => file, :const_name => Utils.camelize(relative_path) }
     end
     list
+  end
+
+  def counter(min = 0, max = nil)
+    Drivers::Counter.new(min, max)
   end
 
   def init(series_name, *args)

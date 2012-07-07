@@ -106,6 +106,19 @@ class SeriesExeTest < Test::Unit::TestCase
     }
   end
 
+  def test_n_option_with_dash_reads_x_from_stdin
+    assert_script %{
+      $ series geometric -n - <<DOC
+      > 1
+      > 3
+      > 5
+      > DOC
+      2
+      8
+      32
+    }
+  end
+
   #
   # -x test
   #
