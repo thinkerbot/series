@@ -11,11 +11,11 @@ class SeriesExeTest < Test::Unit::TestCase
   def test_series_prints_values_for_series
     assert_script %{
       $ series geometric | head -n 5
-      1
-      2
-      4
-      8
-      16
+      1.0
+      2.0
+      4.0
+      8.0
+      16.0
     }
   end
 
@@ -37,11 +37,11 @@ class SeriesExeTest < Test::Unit::TestCase
   def test_n_option_limits_x
     assert_script %{
       $ series geometric -n 5
-      1
-      2
-      4
-      8
-      16
+      1.0
+      2.0
+      4.0
+      8.0
+      16.0
     }
   end
 
@@ -54,19 +54,19 @@ class SeriesExeTest < Test::Unit::TestCase
   def test_n_option_allows_range_of_x
     assert_script %{
       $ series geometric -n 2..5
-      4
-      8
-      16
-      32
+      4.0
+      8.0
+      16.0
+      32.0
     }
   end
 
   def test_n_option_allows_exclusive_range_of_x
     assert_script %{
       $ series geometric -n 2...5
-      4
-      8
-      16
+      4.0
+      8.0
+      16.0
     }
   end
 
@@ -79,7 +79,7 @@ class SeriesExeTest < Test::Unit::TestCase
   def test_n_option_with_matching_range
     assert_script %{
       $ series geometric -n 0..0
-      1
+      1.0
     }
   end
 
@@ -92,10 +92,10 @@ class SeriesExeTest < Test::Unit::TestCase
   def test_n_option_allows_negative_values
     assert_script %{
       $ series geometric -n -4..-1
-      1/16
-      1/8
-      1/4
-      1/2
+      0.0625
+      0.125
+      0.25
+      0.5
     }
   end
 
@@ -113,9 +113,24 @@ class SeriesExeTest < Test::Unit::TestCase
       > 3
       > 5
       > DOC
+      2.0
+      8.0
+      32.0
+    }
+  end
+
+  #
+  # -r test
+  #
+
+  def test_r_option_rounds_output_to_integer
+    assert_script %{
+      $ series geometric -r | head -n 5
+      1
       2
+      4
       8
-      32
+      16
     }
   end
 
@@ -126,11 +141,11 @@ class SeriesExeTest < Test::Unit::TestCase
   def test_x_option_prints_x_with_y
     assert_script %{
       $ series geometric -x | head -n 5
-      0 1
-      1 2
-      2 4
-      3 8
-      4 16
+      0 1.0
+      1 2.0
+      2 4.0
+      3 8.0
+      4 16.0
     }
   end
 end

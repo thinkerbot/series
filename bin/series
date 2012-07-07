@@ -13,6 +13,7 @@ end
 driver = nil
 format = "%2$s\n"
 throttle = nil
+round = false
 
 OptionParser.new do |opts|
   opts.banner = %{
@@ -36,12 +37,16 @@ options:
     exit
   end
 
-  opts.on("-n NUM", "number of values to print") do |input|
+  opts.on("-n NUM_OR_RANGE", "number of values to print") do |input|
     driver = Series.driver(input)
 
     if driver.nil?
       raise "invalid value for -n: #{input.inspect}"
     end
+  end
+
+  opts.on("-r", "--round", "round values to integers") do
+    round = true
   end
 
   opts.on("-t", "--throttle NUM", "max speed in n/sec") do |input|
@@ -65,6 +70,11 @@ driver ||= Series.driver
 
 driver.each do |x|
   y = series[x]
+
+  if round
+    y = y.round
+  end
+
   print format % [x, y]
 
   if throttle

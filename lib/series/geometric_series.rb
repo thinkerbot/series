@@ -5,8 +5,8 @@ module Series
     attr_reader :r
 
     def initialize(a = 1, r = 2)
-      @a = a
-      @r = r
+      @a = a.to_f
+      @r = r.to_f
     end
 
     def [](n)
