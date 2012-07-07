@@ -39,7 +39,7 @@ options:
   opts.on("-n NUM", "number of values to print") do |input|
     case input
     when /^\d+$/
-      n = input.to_i
+      n = input.to_i - 1
     when /^(\d+)..(\d+)$/
       x = $1.to_i
       n = $2.to_i
@@ -63,8 +63,8 @@ args = ARGV.dup
 ARGV.clear
 
 series = Series.init(*args)
-if n.nil? || x < n
-  while n.nil? || x < n
+if n.nil? || x <= n
+  while n.nil? || x <= n
     y = series[x]
     print format % [x, y] 
     x += 1

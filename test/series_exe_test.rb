@@ -51,6 +51,7 @@ class SeriesExeTest < Test::Unit::TestCase
       4
       8
       16
+      32
     }
   end
 
@@ -59,6 +60,7 @@ class SeriesExeTest < Test::Unit::TestCase
       $ series geometric -n 2...5
       4
       8
+      16
     }
   end
 
