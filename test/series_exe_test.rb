@@ -70,6 +70,16 @@ class SeriesExeTest < Test::Unit::TestCase
     }
   end
 
+  def test_n_option_allows_negative_values
+    assert_script %{
+      $ series geometric -n -4..-1
+      1/16
+      1/8
+      1/4
+      1/2
+    }
+  end
+
   def test_n_option_raises_error_for_invalid_input
     assert_script %{
       $ series geometric -n abc    # [1]

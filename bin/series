@@ -40,10 +40,10 @@ options:
     case input
     when /^\d+$/
       n = input.to_i - 1
-    when /^(\d+)..(\d+)$/
+    when /^(-?\d+)..(-?\d+)$/
       x = $1.to_i
       n = $2.to_i
-    when /^(\d+)...(\d+)$/
+    when /^(-?\d+)...(-?\d+)$/
       x = $1.to_i
       n = $2.to_i - 1
     else
