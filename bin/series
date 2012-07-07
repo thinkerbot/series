@@ -12,6 +12,7 @@ end
 
 driver = nil
 format = "%2$s\n"
+throttle = nil
 
 OptionParser.new do |opts|
   opts.banner = %{
@@ -43,6 +44,10 @@ options:
     end
   end
 
+  opts.on("-t", "--throttle NUM", "max speed in n/sec") do |input|
+    throttle = input.to_f
+  end
+
   opts.on("-x", "print x values") do
     format = "%s %s\n"
   end
@@ -57,9 +62,14 @@ ARGV.clear
 series = Series.init(*args)
 driver ||= Series.driver
 
+
 driver.each do |x|
   y = series[x]
   print format % [x, y]
+
+  if throttle
+    sleep(1.0/throttle)
+  end
 end
 
 rescue Interrupt
