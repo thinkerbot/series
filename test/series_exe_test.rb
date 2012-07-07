@@ -1,6 +1,7 @@
 require File.expand_path('../test_helper.rb', __FILE__)
 
 class SeriesExeTest < Test::Unit::TestCase
+  include ShellTest
 
   def test_series_prints_usage
     output = `series`
@@ -23,10 +24,13 @@ class SeriesExeTest < Test::Unit::TestCase
   #
 
   def test_series_prints_values_for_series
-    output = `series geometric | head`
-    assert_equal %w{
-      1   2   4   8  16
-      32 64 128 256 512
-    }, output.split("\n")
+    assert_script %{
+      $ series geometric | head -n 5
+      1
+      2
+      4
+      8
+      16
+    }
   end
 end

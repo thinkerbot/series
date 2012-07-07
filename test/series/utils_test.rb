@@ -11,19 +11,19 @@ module ConstantNest
 end
 
 class UtilsTest < Test::Unit::TestCase
-  include Series::Utils
-  include FileTestUtils
+  Utils = Series::Utils
+  include ShellTest::FileMethods
 
   #
   # split test
   #
 
   def test_split_splits_path_along_colon
-    assert_equal ["a/b", "c"], split("a/b:c")
+    assert_equal ["a/b", "c"], Utils.split("a/b:c")
   end
 
   def test_split_returns_arrays
-    assert_equal ["a/b", "c"], split(["a/b", "c"])
+    assert_equal ["a/b", "c"], Utils.split(["a/b", "c"])
   end
 
   #
@@ -31,17 +31,19 @@ class UtilsTest < Test::Unit::TestCase
   #
 
   def test_glob_returns_enum_for_files_matching_pattern_with_path
-    Dir.mktmpdir do |dir|
-      one = File.join(dir, "one")
-      two = File.join(dir, "two")
-      a = create(one, "a.rb")
-      b = create(one, "b.rb")
-      c = create(two, "c.rb")
-          create(two, "d.txt")
+    one = path("one")
+    two = path("two")
 
-      path = "#{one}:#{two}"
-      assert_equal [[one, a], [one, b], [two, c]], glob('*.rb', path).to_a
-    end
+    a = prepare("one/a.rb")
+    b = prepare("one/b.rb")
+    c = prepare("two/c.rb")
+        prepare("two/d.txt")
+
+    assert_equal [
+      [one, a],
+      [one, b],
+      [two, c]
+    ], Utils.glob('*.rb', "#{one}:#{two}").to_a
   end
 
   #
@@ -50,30 +52,30 @@ class UtilsTest < Test::Unit::TestCase
 
   def test_constantize_returns_the_existing_constant
     # ::ConstName
-    assert_equal ConstName, constantize("ConstName")
-    assert_equal ConstName, constantize("::ConstName")
-    assert_equal ConstName, constantize("Object::ConstName")
+    assert_equal ConstName, Utils.constantize("ConstName")
+    assert_equal ConstName, Utils.constantize("::ConstName")
+    assert_equal ConstName, Utils.constantize("Object::ConstName")
 
     # ConstantNest::ConstName
-    assert_equal ConstantNest::ConstName, constantize("ConstantNest::ConstName")
-    assert_equal ConstantNest::ConstName, constantize("::ConstantNest::ConstName")
-    assert_equal ConstantNest::ConstName, constantize("Object::ConstantNest::ConstName")
+    assert_equal ConstantNest::ConstName, Utils.constantize("ConstantNest::ConstName")
+    assert_equal ConstantNest::ConstName, Utils.constantize("::ConstantNest::ConstName")
+    assert_equal ConstantNest::ConstName, Utils.constantize("Object::ConstantNest::ConstName")
   end
 
   def test_constantize_raise_error_for_invalid_constant_names
-    assert_raises(NameError) { constantize("") }
-    assert_raises(NameError) { constantize("::") }
-    assert_raises(NameError) { constantize("const_name") }
+    assert_raises(NameError) { Utils.constantize("") }
+    assert_raises(NameError) { Utils.constantize("::") }
+    assert_raises(NameError) { Utils.constantize("const_name") }
   end
 
   def test_constantize_raises_error_if_constant_does_not_exist
-    assert_raises(NameError) { constantize("Non::Existant") }
-    assert_raises(NameError) { constantize("::Non::Existant") }
+    assert_raises(NameError) { Utils.constantize("Non::Existant") }
+    assert_raises(NameError) { Utils.constantize("::Non::Existant") }
   end
 
   def test_constantize_yields_current_const_and_missing_constant_names_to_the_block
     was_in_block = false
-    constantize("Non::Existant") do |const, const_names|
+    Utils.constantize("Non::Existant") do |const, const_names|
       assert_equal Object, const
       assert_equal ["Non", "Existant"], const_names
       was_in_block = true
@@ -81,7 +83,7 @@ class UtilsTest < Test::Unit::TestCase
     assert was_in_block
 
     was_in_block = false
-    constantize("ConstName::Non::Existant") do |const, const_names|
+    Utils.constantize("ConstName::Non::Existant") do |const, const_names|
       assert_equal ConstName, const
       assert_equal ["Non", "Existant"], const_names
       was_in_block = true
@@ -90,7 +92,7 @@ class UtilsTest < Test::Unit::TestCase
   end
 
   def test_constantize_returns_return_value_of_block_when_yielding_to_the_block
-    assert_equal(ConstName, constantize("ConstName") { false })
-    assert_equal(false, constantize("Non::Existant") { false })
+    assert_equal(ConstName, Utils.constantize("ConstName") { false })
+    assert_equal(false, Utils.constantize("Non::Existant") { false })
   end
 end
