@@ -10,8 +10,9 @@ if ARGV.empty?
   ARGV << '-h'
 end
 
-n = 0
-max = nil
+x = 0
+n = nil
+format = "%2$s\n"
 
 OptionParser.new do |opts|
   opts.banner = %{
@@ -34,6 +35,10 @@ options:
     end
     exit
   end
+
+  opts.on("-x", "print x values") do
+    format = "%s %s\n"
+  end
 end.parse!
 
 if ARGV.empty?
@@ -43,9 +48,10 @@ args = ARGV.dup
 ARGV.clear
 
 series = Series.init(*args)
-while max.nil? || n < max
-  puts series[n]
-  n += 1
+while n.nil? || x < n
+  y = series[x]
+  print format % [x, y] 
+  x += 1
 end
 
 rescue Interrupt

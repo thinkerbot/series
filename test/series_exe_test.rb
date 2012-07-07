@@ -8,6 +8,17 @@ class SeriesExeTest < Test::Unit::TestCase
     assert_match(/usage: series/, output)
   end
 
+  def test_series_prints_values_for_series
+    assert_script %{
+      $ series geometric | head -n 5
+      1
+      2
+      4
+      8
+      16
+    }
+  end
+
   #
   # options test
   #
@@ -19,18 +30,14 @@ class SeriesExeTest < Test::Unit::TestCase
     end
   end
 
-  #
-  # output test
-  #
-
-  def test_series_prints_values_for_series
+  def test_x_option_prints_x_with_y
     assert_script %{
-      $ series geometric | head -n 5
-      1
-      2
-      4
-      8
-      16
+      $ series geometric -x | head -n 5
+      0 1
+      1 2
+      2 4
+      3 8
+      4 16
     }
   end
 end
