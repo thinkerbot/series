@@ -1,6 +1,7 @@
 require "series/version"
 require "series/utils"
 require "series/drivers/counter"
+require "series/drivers/stream"
 
 module Series
   module_function
@@ -22,8 +23,25 @@ module Series
     list
   end
 
-  def counter(min = 0, max = nil)
-    Drivers::Counter.new(min, max)
+  def driver(input = nil)
+    case input
+    when nil
+      Drivers::Counter.new
+    when "-"
+      Drivers::Stream.new
+    when /^\d+$/
+      Drivers::Counter.new(0, input.to_i - 1)
+    when /^(-?\d+)..(-?\d+)$/
+      x = $1.to_i
+      n = $2.to_i
+      Drivers::Counter.new(x, n)
+    when /^(-?\d+)...(-?\d+)$/
+      x = $1.to_i
+      n = $2.to_i - 1
+      Drivers::Counter.new(x, n)
+    else
+      nil
+    end
   end
 
   def init(series_name, *args)

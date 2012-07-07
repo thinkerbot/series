@@ -36,21 +36,9 @@ options:
   end
 
   opts.on("-n NUM", "number of values to print") do |input|
-    driver = case input
-    when "-"
-      require "series/drivers/stream"
-      Series::Drivers::Stream.new
-    when /^\d+$/
-      Series.counter(0, input.to_i - 1)
-    when /^(-?\d+)..(-?\d+)$/
-      x = $1.to_i
-      n = $2.to_i
-      Series.counter(x, n)
-    when /^(-?\d+)...(-?\d+)$/
-      x = $1.to_i
-      n = $2.to_i - 1
-      Series.counter(x, n)
-    else
+    driver = Series.driver(input)
+
+    if driver.nil?
       raise "invalid value for -n: #{input.inspect}"
     end
   end
@@ -67,7 +55,7 @@ args = ARGV.dup
 ARGV.clear
 
 series = Series.init(*args)
-driver ||= Series.counter
+driver ||= Series.driver
 
 driver.each do |x|
   y = series[x]
