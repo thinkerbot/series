@@ -19,6 +19,17 @@ class SeriesExeTest < Test::Unit::TestCase
     }
   end
 
+  def test_series_passes_args_to_series
+    assert_script %{
+      $ series geometric 2 4 | head -n 5
+      2.0
+      8.0
+      32.0
+      128.0
+      512.0
+    }
+  end
+
   #
   # -l, --list test
   #
