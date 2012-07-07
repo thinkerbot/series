@@ -30,6 +30,17 @@ class SeriesExeTest < Test::Unit::TestCase
     end
   end
 
+  def test_n_option_limits_x
+    assert_script %{
+      $ series geometric -n 5
+      1
+      2
+      4
+      8
+      16
+    }
+  end
+
   def test_x_option_prints_x_with_y
     assert_script %{
       $ series geometric -x | head -n 5

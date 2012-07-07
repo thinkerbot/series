@@ -36,6 +36,10 @@ options:
     exit
   end
 
+  opts.on("-n NUM", "number of values to print") do |num|
+    n = num.to_i
+  end
+
   opts.on("-x", "print x values") do
     format = "%s %s\n"
   end
