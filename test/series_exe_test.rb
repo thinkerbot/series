@@ -62,6 +62,12 @@ class SeriesExeTest < Test::Unit::TestCase
     }
   end
 
+  def test_n_option_with_inverted_range
+    assert_script %{
+      $ series geometric -n 5..2
+    }
+  end
+
   def test_n_option_raises_error_for_invalid_input
     assert_script %{
       $ series geometric -n abc    # [1]

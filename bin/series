@@ -63,10 +63,12 @@ args = ARGV.dup
 ARGV.clear
 
 series = Series.init(*args)
-while n.nil? || x < n
-  y = series[x]
-  print format % [x, y] 
-  x += 1
+if n.nil? || x < n
+  while n.nil? || x < n
+    y = series[x]
+    print format % [x, y] 
+    x += 1
+  end
 end
 
 rescue Interrupt
