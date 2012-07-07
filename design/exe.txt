@@ -10,8 +10,10 @@ $ series geometric 1 2
 $ series [OPTIONS] [TYPE] [ARGS...]
   -x              show x values
   -n              num values (or a range of values)
+                  use - to read from stdin (use this to create non-integer inputs)
   -i, --integers  round output values
   -s, --sum       sum n values (or provide the series sum)
+  -t, --throttle  max speed in n/sec
 
 $ series geometric 1 2 -x -n 3
 0 1
