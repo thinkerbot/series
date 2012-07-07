@@ -20,7 +20,7 @@ class SeriesExeTest < Test::Unit::TestCase
   end
 
   #
-  # options test
+  # -l, --list test
   #
 
   def test_list_option_shows_available_series
@@ -29,6 +29,10 @@ class SeriesExeTest < Test::Unit::TestCase
       assert_match(/geometric/, output, opt)
     end
   end
+
+  #
+  # -n test
+  #
 
   def test_n_option_limits_x
     assert_script %{
@@ -40,6 +44,10 @@ class SeriesExeTest < Test::Unit::TestCase
       16
     }
   end
+
+  #
+  # -x test
+  #
 
   def test_x_option_prints_x_with_y
     assert_script %{
