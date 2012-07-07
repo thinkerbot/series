@@ -10,6 +10,12 @@ class GeometricSeriesTest < Test::Unit::TestCase
     assert_equal 2, series.r
   end
 
+  def test_default_a_is_1_and_default_r_is_2
+    series = GeometricSeries.new
+    assert_equal 1, series.a
+    assert_equal 2, series.r
+  end
+
   #
   # AGET test
   #

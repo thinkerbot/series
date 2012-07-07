@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
   gem.homepage      = ""
 
   gem.files         = []
-  gem.executables   = []
+  gem.executables   = ['series']
   gem.test_files    = []
   gem.name          = "series"
   gem.require_paths = ["lib"]

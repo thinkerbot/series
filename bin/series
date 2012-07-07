@@ -1,0 +1,59 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+
+begin
+require 'optparse'
+require 'series'
+
+if ARGV.empty?
+  ARGV << '-h'
+end
+
+n = 0
+max = nil
+
+OptionParser.new do |opts|
+  opts.banner = %{
+usage: #{File.basename($0)} [options] SERIES [ARGS...]
+
+  Generates a series in the specified format.
+
+options:
+}.lstrip
+  opts.on("-h", "--help", "print this help") do
+    puts opts
+    puts
+    exit
+  end
+
+  opts.on("-l", "--list", "list available series") do
+    list = Series.list
+    list.keys.sort.each do |name|
+      puts name
+    end
+    exit
+  end
+end.parse!
+
+if ARGV.empty?
+  raise "no series specified"
+end
+args = ARGV.dup
+ARGV.clear
+
+series = Series.init(*args)
+while max.nil? || n < max
+  puts series[n]
+  n += 1
+end
+
+rescue Interrupt
+  exit 130
+rescue Errno::EPIPE 
+  exit 0
+rescue
+  raise if $DEBUG
+  $stderr.puts $!.message
+  exit 1
+end
+

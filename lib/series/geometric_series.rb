@@ -4,7 +4,7 @@ module Series
     attr_reader :a
     attr_reader :r
 
-    def initialize(a, r)
+    def initialize(a = 1, r = 2)
       @a = a
       @r = r
     end
