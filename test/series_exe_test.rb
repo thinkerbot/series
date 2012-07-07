@@ -45,6 +45,12 @@ class SeriesExeTest < Test::Unit::TestCase
     }
   end
 
+  def test_n_option_with_n_equal_0_prints_nothing
+    assert_script %{
+      $ series geometric -n 0
+    }
+  end
+
   def test_n_option_allows_range_of_x
     assert_script %{
       $ series geometric -n 2..5
@@ -67,6 +73,19 @@ class SeriesExeTest < Test::Unit::TestCase
   def test_n_option_with_inverted_range
     assert_script %{
       $ series geometric -n 5..2
+    }
+  end
+
+  def test_n_option_with_matching_range
+    assert_script %{
+      $ series geometric -n 0..0
+      1
+    }
+  end
+
+  def test_n_option_with_matching_exlusive_range_prints_nothing
+    assert_script %{
+      $ series geometric -n 0...0
     }
   end
 
