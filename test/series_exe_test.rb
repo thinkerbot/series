@@ -53,12 +53,48 @@ class SeriesExeTest < Test::Unit::TestCase
   end
 
   #
+  # -m test
+  #
+
+  def test_m_option_sets_min
+    assert_script %{
+      $ series geometric -m 2 | head -n 3
+      4.0
+      8.0
+      16.0
+    }
+  end
+
+  def test_m_option_displays_error_for_negative_values
+    assert_script %{
+      $ series geometric -m -1     # [1]
+      invalid -m (cannot be negative): -1
+    }
+  end
+
+  def test_m_option_displays_error_for_non_numeric_input
+    assert_script %{
+      $ series geometric -m abc    # [1]
+      invalid -m (non-numeric): "abc"
+    }
+  end
+
+  #
   # -n test
   #
 
-  def test_n_option_limits_x
+  def test_n_option_sets_max
     assert_script %{
-      $ series geometric -n 5
+      $ series geometric -n 2
+      1.0
+      2.0
+      4.0
+    }
+  end
+
+  def test_n_option_treats_negative_as_infinite
+    assert_script %{
+      $ series geometric -n -1 | head -n 5
       1.0
       2.0
       4.0
@@ -67,77 +103,10 @@ class SeriesExeTest < Test::Unit::TestCase
     }
   end
 
-  def test_n_option_with_n_equal_0_prints_nothing
-    assert_script %{
-      $ series geometric -n 0
-    }
-  end
-
-  def test_n_option_allows_range_of_x
-    assert_script %{
-      $ series geometric -n 2..5
-      4.0
-      8.0
-      16.0
-      32.0
-    }
-  end
-
-  def test_n_option_allows_exclusive_range_of_x
-    assert_script %{
-      $ series geometric -n 2...5
-      4.0
-      8.0
-      16.0
-    }
-  end
-
-  def test_n_option_with_inverted_range
-    assert_script %{
-      $ series geometric -n 5..2
-    }
-  end
-
-  def test_n_option_with_matching_range
-    assert_script %{
-      $ series geometric -n 0..0
-      1.0
-    }
-  end
-
-  def test_n_option_with_matching_exlusive_range_prints_nothing
-    assert_script %{
-      $ series geometric -n 0...0
-    }
-  end
-
-  def test_n_option_allows_negative_values
-    assert_script %{
-      $ series geometric -n -4..-1
-      0.0625
-      0.125
-      0.25
-      0.5
-    }
-  end
-
-  def test_n_option_raises_error_for_invalid_input
+  def test_n_option_displays_error_for_non_numeric_input
     assert_script %{
       $ series geometric -n abc    # [1]
-      invalid value for -n: "abc"
-    }
-  end
-
-  def test_n_option_with_dash_reads_x_from_stdin
-    assert_script %{
-      $ series geometric -n - <<DOC
-      > 1
-      > 3
-      > 5
-      > DOC
-      2.0
-      8.0
-      32.0
+      invalid -n (non-numeric): "abc"
     }
   end
 

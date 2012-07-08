@@ -10,10 +10,11 @@ if ARGV.empty?
   ARGV << '-h'
 end
 
-driver = nil
-format = "%2$s\n"
-throttle = nil
+min = 0
+max = -1
 round = false
+throttle = nil
+print_x = false
 
 OptionParser.new do |opts|
   opts.banner = %{
@@ -37,12 +38,24 @@ options:
     exit
   end
 
-  opts.on("-n NUM_OR_RANGE", "number of values to print") do |input|
-    driver = Series.driver(input)
-
-    if driver.nil?
-      raise "invalid value for -n: #{input.inspect}"
+  opts.on("-m", "--min NUM", "start index") do |input|
+    unless input =~ /^-?\d+$/
+      raise "invalid -m (non-numeric): #{input.inspect}"
     end
+
+    min = input.to_i
+
+    if min < 0
+      raise "invalid -m (cannot be negative): #{input}"
+    end
+  end
+
+  opts.on("-n", "--max NUM", "stop index") do |input|
+    unless input =~ /^-?\d+$/
+      raise "invalid -n (non-numeric): #{input.inspect}"
+    end
+
+    max = input.to_i
   end
 
   opts.on("-r", "--round", "round values to integers") do
@@ -54,7 +67,7 @@ options:
   end
 
   opts.on("-x", "print x values") do
-    format = "%s %s\n"
+    print_x = true
   end
 end.parse!
 
@@ -64,25 +77,38 @@ end
 args = ARGV.dup
 ARGV.clear
 
-series = Series.init(*args)
-driver ||= Series.driver
+if max >= 0 && min > max
+  # nothing to do...
+  exit
+end
 
-driver.each do |x|
-  if x == series.n
-    y = series.curr
-    series.step
-  else
-    y = series[x]
+series = Series.init(*args)
+
+x = min
+x.times { series.step }
+
+loop do
+  y = series.curr
+
+  if print_x
+    print "#{x} "
   end
 
   if round
     y = y.round
   end
 
-  print format % [x, y]
+  puts y
 
   if throttle
     sleep(1.0/throttle)
+  end
+
+  if max < 0 || x < max
+    series.step
+    x += 1
+  else
+    break
   end
 end
 
