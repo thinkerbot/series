@@ -67,9 +67,13 @@ ARGV.clear
 series = Series.init(*args)
 driver ||= Series.driver
 
-
 driver.each do |x|
-  y = series[x]
+  if x == series.n
+    y = series.curr
+    series.step
+  else
+    y = series[x]
+  end
 
   if round
     y = y.round

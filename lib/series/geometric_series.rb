@@ -3,10 +3,24 @@ module Series
   class GeometricSeries
     attr_reader :a
     attr_reader :r
+    attr_reader :n
 
     def initialize(a = 1, r = 2)
       @a = a.to_f
       @r = r.to_f
+      reset
+    end
+
+    def reset
+      @n = 0
+    end
+
+    def step
+      @n += 1
+    end
+
+    def curr
+      self[@n]
     end
 
     def [](n)
