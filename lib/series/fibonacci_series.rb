@@ -1,9 +1,11 @@
+require 'series/api'
+
 module Series
   # Describes a fibonacci series.
   class FibonacciSeries
+    include Series::Api
 
     attr_reader :curr
-    attr_reader :n
 
     def initialize
       reset
@@ -12,12 +14,12 @@ module Series
     def reset
       @curr = 0
       @succ = 1
-      @n = 0
+      super
     end
 
     def step
       @curr, @succ = @succ, @curr + @succ
-      @n += 1
+      super
     end
 
     def call(n)

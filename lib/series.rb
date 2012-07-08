@@ -1,21 +1,8 @@
 require "series/version"
 require "series/utils"
+require "series/wrapper"
 
 module Series
-  attr_reader :n
-
-  def reset
-    @n = 0
-  end
-
-  def step
-    @n += 1
-  end
-
-  def curr
-    call(n)
-  end
-
   module_function
 
   # The default path is the SERIES_PATH ENV variable, or the series directory
@@ -54,9 +41,8 @@ module Series
     klass = Utils.constantize(const_name)
     instance = klass.new(*args)
 
-    unless instance.respond_to?(:step) && instance.respond_to?(:curr)
-      instance.extend Series
-      instance.reset
+    unless instance.kind_of?(Api)
+      instance = Wrapper.new(instance)
     end
 
     instance
