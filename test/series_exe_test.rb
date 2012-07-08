@@ -30,6 +30,17 @@ class SeriesExeTest < Test::Unit::TestCase
     }
   end
 
+  def test_series_with_fibonacci
+    assert_script %{
+      $ series fibonacci | head -n 5
+      0
+      1
+      1
+      2
+      3
+    }
+  end
+
   #
   # -l, --list test
   #
