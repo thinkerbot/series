@@ -2,6 +2,20 @@ require "series/version"
 require "series/utils"
 
 module Series
+  attr_reader :n
+
+  def reset
+    @n = 0
+  end
+
+  def step
+    @n += 1
+  end
+
+  def curr
+    call(n)
+  end
+
   module_function
 
   # The default path is the SERIES_PATH ENV variable, or the series directory
@@ -15,6 +29,11 @@ module Series
     list = {}
     Utils.glob("**/*_series.rb", path) do |dir, file|
       name = File.basename(file, "_series.rb")
+      relative_path = file[dir.length, file.length - dir.length - 3]
+      list[name] = {:require => file, :const_name => Utils.camelize(relative_path) }
+    end
+    Utils.glob("**/*_function.rb", path) do |dir, file|
+      name = File.basename(file, "_function.rb")
       relative_path = file[dir.length, file.length - dir.length - 3]
       list[name] = {:require => file, :const_name => Utils.camelize(relative_path) }
     end
@@ -33,6 +52,13 @@ module Series
 
     require require_file
     klass = Utils.constantize(const_name)
-    klass.new(*args)
+    instance = klass.new(*args)
+
+    unless instance.respond_to?(:step) && instance.respond_to?(:curr)
+      instance.extend Series
+      instance.reset
+    end
+
+    instance
   end
 end

@@ -13,12 +13,12 @@ class FibonacciSeriesTest < Test::Unit::TestCase
   end
 
   #
-  # AGET test
+  # call test
   #
 
-  def test_AGET_returns_series_value_at_input
+  def test_call_returns_series_value_at_input
     TEN_VALUES.each_with_index do |value, n|
-      assert_equal value, series[n]
+      assert_equal value, series.call(n)
     end
   end
 

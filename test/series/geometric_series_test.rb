@@ -17,14 +17,14 @@ class GeometricSeriesTest < Test::Unit::TestCase
   end
 
   #
-  # AGET test
+  # call test
   #
 
   def test_AGET_returns_series_value_at_input
     series = GeometricSeries.new(2, 3)
-    assert_equal 2,  series[0]
-    assert_equal 6,  series[1]
-    assert_equal 18, series[2]
+    assert_equal 2,  series.call(0)
+    assert_equal 6,  series.call(1)
+    assert_equal 18, series.call(2)
   end
 
   #

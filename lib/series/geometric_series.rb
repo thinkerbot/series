@@ -1,9 +1,10 @@
 module Series
   # Describes a geometric series.
   class GeometricSeries
+    include Series
+
     attr_reader :a
     attr_reader :r
-    attr_reader :n
 
     def initialize(a = 1, r = 2)
       @a = a.to_f
@@ -11,19 +12,7 @@ module Series
       reset
     end
 
-    def reset
-      @n = 0
-    end
-
-    def step
-      @n += 1
-    end
-
-    def curr
-      self[@n]
-    end
-
-    def [](n)
+    def call(n)
       a * r ** n
     end
 
@@ -36,7 +25,7 @@ module Series
         convergent? ? (a / (1.0 - r)) : nil
       else
         sum = 0
-        n.times {|i| sum += self[i] }
+        n.times {|i| sum += call(i) }
         sum
       end
     end

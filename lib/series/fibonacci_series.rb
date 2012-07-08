@@ -20,7 +20,7 @@ module Series
       @n += 1
     end
 
-    def [](n)
+    def call(n)
       reset
       n.times { step }
       curr
