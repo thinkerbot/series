@@ -17,5 +17,13 @@ module Series
     def call(n)
       raise NotImplementedError
     end
+
+    module_function
+
+    def satisfied?(obj)
+      obj.respond_to?(:reset) &&
+      obj.respond_to?(:step) &&
+      obj.respond_to?(:curr)
+    end
   end
 end

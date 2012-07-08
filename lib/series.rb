@@ -41,7 +41,7 @@ module Series
     klass = Utils.constantize(const_name)
     instance = klass.new(*args)
 
-    unless instance.kind_of?(Api)
+    unless Api.satisfied?(instance)
       instance = Wrapper.new(instance)
     end
 
