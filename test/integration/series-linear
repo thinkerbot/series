@@ -1,0 +1,22 @@
+#!/bin/bash
+. test/integration/helper
+
+test_series_linear_print_linear_series_at_each_input_x () {
+printf "%s\n" 0 1 2 10 2 | series-linear 2 3 | assert_output "\
+3.0
+5.0
+7.0
+23.0
+7.0
+"
+}
+
+#
+# -h
+#
+
+test_series_linear_h_prints_help () {
+series-linear -h | grep -q "usage: series-linear"
+}
+
+. ts

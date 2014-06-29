@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+begin
+  require 'optparse'
+  require 'series'
+  require 'series/command'
+
+  options = {}
+  OptionParser.new do |opts|
+    opts.banner = %{
+usage: series-fibonacci [options]
+
+  Prints fibonacci series value at every input x.
+
+options:
+}.lstrip
+
+    opts.on("-h", "--help", "print this help") do
+      puts opts
+      puts
+      puts Series.version
+      exit
+    end
+  end.parse!
+
+  unless ARGV.empty?
+    $stderr.puts "extra arguments"
+    exit 1
+  end
+
+  curr, succ, n = 0, 1, 0
+  Series::Command.loop do |x|
+    n_steps = x - n
+
+    # reset if not going forward
+    if n_steps < 0
+      curr, succ, n_steps = 0, 1, x
+    end
+
+    n_steps.times do
+      curr, succ = succ, curr + succ
+    end
+    n = x
+
+    curr
+  end
+
+rescue Interrupt
+  exit 130
+rescue Errno::EPIPE
+  exit 0
+end

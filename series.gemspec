@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.homepage      = ""
 
   gem.files         = []
-  gem.executables   = ['series']
+  gem.executables   = Dir.glob("bin/series*").map {|file| File.basename(file) }
   gem.test_files    = []
   gem.name          = "series"
   gem.require_paths = ["lib"]
