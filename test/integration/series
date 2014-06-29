@@ -1,0 +1,12 @@
+#!/bin/bash
+. test/integration/helper
+
+#
+# -h
+#
+
+test_series_h_prints_help () {
+series -h | grep -q "usage: series"
+}
+
+. ts

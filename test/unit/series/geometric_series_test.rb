@@ -1,4 +1,4 @@
-require File.expand_path('../../test_helper.rb', __FILE__)
+require File.expand_path('../../helper.rb', __FILE__)
 require 'series/geometric_series'
 
 class GeometricSeriesTest < Test::Unit::TestCase

@@ -1,10 +1,6 @@
-require 'series/api'
-
 module Series
   # Describes a geometric series.
   class GeometricSeries
-    include Series::Api
-
     attr_reader :a
     attr_reader :r
 
@@ -12,6 +8,10 @@ module Series
       @a = a.to_f
       @r = r.to_f
       reset
+    end
+
+    def reset
+      @n = 0
     end
 
     def call(n)

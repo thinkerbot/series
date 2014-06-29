@@ -1,127 +1,31 @@
 #!/usr/bin/env ruby
 begin
-require 'optparse'
+  require 'optparse'
+  require 'series'
+  require 'series/command'
 
-if ARGV.empty?
-  ARGV << '-h'
-end
+  options = Series::Command.options(
+    :mode => 'run'
+  )
+  OptionParser.new do |opts|
+    opts.banner = %{
+usage: series [options] SUBCOMMANDS...
 
-format = "%s"
-offset = 0
-max = nil
-step = 1
-throttle = nil
-xindex = nil
-
-OptionParser.new do |opts|
-  opts.banner = %{
-series [OPTIONS] SERIES [- SERIES ...]
-
-  Generate series data.
+  Generate series data from the specified subcommands.
 
 options:
 }.lstrip
 
-  opts.on("-f", "--format FORMAT", "output format (#{format})") do |input|
-    format = input
-  end
-
-  opts.on("-h", "--help", "print this help") do
-    puts opts
-    puts
-    exit
-  end
-
-  opts.on("-l", "--list", "list available series") do
-    list = Series.list
-    list.keys.sort.each do |name|
-      puts name
+    opts.on("-h", "--help", "print this help") do
+      puts opts
+      puts
+      puts Series.version
+      exit
     end
-    exit
-  end
-  
-  opts.on("-n", "--num NUM", "number of rows (no limit)") do |input|
-    max = input.to_i
-  end
-
-  opts.on("-o", "--offset NUM", "row offset (#{offset})") do |input|
-    offset = input.to_i
-  end
-
-  opts.on("-s", "--step NUM", "step size (#{step})") do |input|
-    step = input.to_i
-  end
-  
-  opts.on("-t", "--throttle NUM", "max speed in n/sec") do |input|
-    throttle = input.to_f
-  end
-
-  opts.on("-x INDEX", "x series (row #)") do |input|
-    xindex = input.to_i
-  end
-end.parse!
-
-if ARGV.empty?
-  raise "no series specified"
-end
-
-series  = []
-current = []
-ARGV << "-"
-while arg = ARGV.shift
-  if arg == "-"
-    unless current.empty?
-      current[0] = "series-#{current[0]}"
-      series << IO.popen(current, 'w+')
-    end
-    current = []
-  else
-    current << arg
-  end
-end
-
-Thread.new do
-  current = offset
-  while max.nil? || current < max
-    series.each do |io|
-      io.puts current
-    end
-    current += step
-  end
-
-  series.each do |io|
-    io.close_write
-  end
-end
-
-loop do
-  complete = true
-
-  values = series.map do |io|
-    if io.eof?
-      nil
-    else
-      complete = false
-      io.gets.chomp("\n")
-    end
-  end
-
-  break if complete
-
-  puts format % values
-
-  if throttle
-    sleep(1.0/throttle)
-  end
-end
+  end.parse!
 
 rescue Interrupt
   exit 130
-rescue Errno::EPIPE 
+rescue Errno::EPIPE
   exit 0
-rescue
-  raise if $DEBUG
-  $stderr.puts $!.message
-  exit 1
 end
-

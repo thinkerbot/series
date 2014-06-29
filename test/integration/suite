@@ -1,0 +1,5 @@
+#!/bin/bash
+export PATH="$PATH:vendor/ts/bin"
+find test/integration -type f |
+grep -v -E '(helper|suite)' |
+xargs ts "$@"
