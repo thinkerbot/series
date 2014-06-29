@@ -3,13 +3,14 @@ begin
   require 'optparse'
   require 'series'
   require 'series/command'
+  require 'shellwords'
 
   options = Series::Command.options(
     :mode => 'run'
   )
   OptionParser.new do |opts|
     opts.banner = %{
-usage: series [options] SUBCOMMANDS...
+usage: series [options] COMMANDS...
 
   Generate series data from the specified subcommands.
 
@@ -23,6 +24,38 @@ options:
       exit
     end
   end.parse!
+
+  commands = ARGV.dup; ARGV.clear
+
+  pipes = commands.map do |command_str|
+    command, *args = Shellwords.shellsplit(command_str)
+    args.unshift("series-#{command}")
+    IO.popen(args, "r+")
+  end
+
+  Thread.new do
+    driver = (0...5).to_a
+    driver.each do |input|
+      pipes.each do |io|
+        io.puts input
+      end
+    end
+    pipes.each do |io|
+      io.close_write
+    end
+  end
+
+  loop do
+    line = []
+    pipes.map do |io|
+      if output = io.gets
+        line << output.chomp("\n")
+      else
+        exit
+      end
+    end
+    puts line.join(" ")
+  end
 
 rescue Interrupt
   exit 130
