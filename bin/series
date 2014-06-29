@@ -1,29 +1,31 @@
 #!/usr/bin/env ruby
-this_file = File.symlink?(__FILE__) ? File.expand_path(File.readlink(__FILE__), File.dirname(__FILE__)) : __FILE__
-$:.unshift File.expand_path('../../lib', this_file)
-
 begin
 require 'optparse'
-require 'series'
 
 if ARGV.empty?
   ARGV << '-h'
 end
 
-min = 0
-max = -1
-round = false
+format = "%s"
+offset = 0
+max = nil
+step = 1
 throttle = nil
-print_x = false
+xindex = nil
 
 OptionParser.new do |opts|
   opts.banner = %{
-usage: #{File.basename($0)} [options] SERIES [ARGS...]
+series [OPTIONS] SERIES [- SERIES ...]
 
-  Generates a series in the specified format.
+  Generate series data.
 
 options:
 }.lstrip
+
+  opts.on("-f", "--format FORMAT", "output format (#{format})") do |input|
+    format = input
+  end
+
   opts.on("-h", "--help", "print this help") do
     puts opts
     puts
@@ -37,78 +39,79 @@ options:
     end
     exit
   end
-
-  opts.on("-m", "--min NUM", "start index") do |input|
-    unless input =~ /^-?\d+$/
-      raise "invalid -m (non-numeric): #{input.inspect}"
-    end
-
-    min = input.to_i
-
-    if min < 0
-      raise "invalid -m (cannot be negative): #{input}"
-    end
-  end
-
-  opts.on("-n", "--max NUM", "stop index") do |input|
-    unless input =~ /^-?\d+$/
-      raise "invalid -n (non-numeric): #{input.inspect}"
-    end
-
+  
+  opts.on("-n", "--num NUM", "number of rows (no limit)") do |input|
     max = input.to_i
   end
 
-  opts.on("-r", "--round", "round values to integers") do
-    round = true
+  opts.on("-o", "--offset NUM", "row offset (#{offset})") do |input|
+    offset = input.to_i
   end
 
+  opts.on("-s", "--step NUM", "step size (#{step})") do |input|
+    step = input.to_i
+  end
+  
   opts.on("-t", "--throttle NUM", "max speed in n/sec") do |input|
     throttle = input.to_f
   end
 
-  opts.on("-x", "print x values") do
-    print_x = true
+  opts.on("-x INDEX", "x series (row #)") do |input|
+    xindex = input.to_i
   end
 end.parse!
 
 if ARGV.empty?
   raise "no series specified"
 end
-args = ARGV.dup
-ARGV.clear
 
-if max >= 0 && min > max
-  # nothing to do...
-  exit
+series  = []
+current = []
+ARGV << "-"
+while arg = ARGV.shift
+  if arg == "-"
+    unless current.empty?
+      current[0] = "series-#{current[0]}"
+      series << IO.popen(current, 'w+')
+    end
+    current = []
+  else
+    current << arg
+  end
 end
 
-series = Series.init(*args)
+Thread.new do
+  current = offset
+  while max.nil? || current < max
+    series.each do |io|
+      io.puts current
+    end
+    current += step
+  end
 
-x = min
-x.times { series.step }
+  series.each do |io|
+    io.close_write
+  end
+end
 
 loop do
-  y = series.curr
+  complete = true
 
-  if print_x
-    print "#{x} "
+  values = series.map do |io|
+    if io.eof?
+      nil
+    else
+      complete = false
+      io.gets.chomp("\n")
+    end
   end
 
-  if round
-    y = y.round
-  end
+  break if complete
 
-  puts y
+  puts format % values
 
   if throttle
     sleep(1.0/throttle)
-  end
-
-  if max < 0 || x < max
-    series.step
-    x += 1
-  else
-    break
   end
 end
 
