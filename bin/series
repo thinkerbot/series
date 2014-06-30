@@ -5,7 +5,9 @@ begin
   require 'series/command'
   require 'shellwords'
 
-  options = Series::Command.options()
+  options = Series::Command.options(
+    :field_sep => " "
+  )
   OptionParser.new do |opts|
     opts.banner = %{
 usage: series [options] COMMANDS...
@@ -14,6 +16,10 @@ usage: series [options] COMMANDS...
 
 options:
 }.lstrip
+
+    opts.on("-F", "--field-sep SEP", "field separator (#{options[:field_sep].inspect})") do |value|
+      options[:field_sep] = value
+    end
 
     opts.on("-h", "--help", "print this help") do
       puts opts
@@ -55,6 +61,7 @@ options:
     end
   end
 
+  field_sep = options[:field_sep]
   loop do
     line = []
     pipes.map do |io|
@@ -64,7 +71,7 @@ options:
         exit
       end
     end
-    puts line.join(" ")
+    puts line.join(field_sep)
   end
 
 rescue Interrupt
