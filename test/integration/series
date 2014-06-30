@@ -60,6 +60,20 @@ series -i -n 3 -s 2 geometric | assert_output "\
 }
 
 #
+# -m
+#
+
+test_series_m_streams_forever () {
+series -n 3 -m geometric | head -n 5 | assert_output "\
+1.0
+2.0
+4.0
+8.0
+16.0
+"
+}
+
+#
 # -n
 #
 

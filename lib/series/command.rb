@@ -22,11 +22,21 @@ module Series
       start_index = options.fetch(:offset)
       step_size = options.fetch(:step_size)
 
-      Enumerator.new do |y|
-        current = start_index
-        n_steps.times do
-          y << current
-          current += step_size
+      if n_steps.nil?
+        Enumerator.new do |y|
+          current = start_index
+          while true
+            y << current
+            current += step_size
+          end
+        end
+      else
+        Enumerator.new do |y|
+          current = start_index
+          n_steps.times do
+            y << current
+            current += step_size
+          end
         end
       end
     end

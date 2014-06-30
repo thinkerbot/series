@@ -39,6 +39,10 @@ options:
       options[:print_step_indexes] = value
     end
 
+    opts.on("-m", "--stream", "generate steps indefinitely") do
+      options[:n_steps] = nil
+    end
+
     opts.on("-n", "--n-steps NUM", "number of steps in series (#{options[:n_steps]})") do |value|
       options[:n_steps] = value.to_i
     end
