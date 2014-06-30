@@ -5,9 +5,7 @@ begin
   require 'series/command'
   require 'shellwords'
 
-  options = Series::Command.options(
-    :mode => 'run'
-  )
+  options = Series::Command.options()
   OptionParser.new do |opts|
     opts.banner = %{
 usage: series [options] COMMANDS...
@@ -23,6 +21,18 @@ options:
       puts Series.version
       exit
     end
+
+    opts.on("-n", "--n-steps NUM", "number of steps in series (#{options[:n_steps]})") do |value|
+      options[:n_steps] = value.to_i
+    end
+
+    opts.on("-o", "--offset NUM", "step offset (#{options[:offset]})") do |value|
+      options[:offset] = value.to_i
+    end
+
+    opts.on("-s", "--step-size NUM", "the step size (#{options[:step_size]})") do |value|
+      options[:step_size] = value.to_i
+    end
   end.parse!
 
   commands = ARGV.dup; ARGV.clear
@@ -34,7 +44,7 @@ options:
   end
 
   Thread.new do
-    driver = (0...5).to_a
+    driver = Series::Command.driver(options)
     driver.each do |input|
       pipes.each do |io|
         io.puts input
