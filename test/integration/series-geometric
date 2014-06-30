@@ -1,0 +1,22 @@
+#!/bin/bash
+. test/integration/helper
+
+test_series_geometric_print_geometric_series_at_each_input_x () {
+printf "%s\n" 0 1 2 10 2 | series-geometric 2 3 | assert_output "\
+2.0
+6.0
+18.0
+118098.0
+18.0
+"
+}
+
+#
+# -h
+#
+
+test_series_geometric_h_prints_help () {
+series-geometric -h | grep -q "usage: series-geometric"
+}
+
+. ts

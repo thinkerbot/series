@@ -1,0 +1,124 @@
+#!/bin/bash
+. test/integration/helper
+
+test_series_generates_specified_series_for_8_steps_of_1 () {
+series "linear 2 1" "geometric 2 3" "fibonacci"  | assert_output "\
+1.0 2.0 0
+3.0 6.0 1
+5.0 18.0 1
+7.0 54.0 2
+9.0 162.0 3
+11.0 486.0 5
+13.0 1458.0 8
+15.0 4374.0 13
+"
+}
+
+#
+# -F
+#
+
+test_series_F_specifies_the_field_sep () {
+series -F ":" "linear 2 1" "geometric 2 3" "fibonacci"  | assert_output "\
+1.0:2.0:0
+3.0:6.0:1
+5.0:18.0:1
+7.0:54.0:2
+9.0:162.0:3
+11.0:486.0:5
+13.0:1458.0:8
+15.0:4374.0:13
+"
+}
+
+#
+# -L
+#
+
+test_series_L_specifies_the_line_sep () {
+series -n 3 -L " " geometric | assert_output "1.0 2.0 4.0 "
+}
+
+#
+# -h
+#
+
+test_series_h_prints_help () {
+series -h | grep -q "usage: series"
+}
+
+#
+# -i
+#
+
+test_series_i_prints_the_step_index () {
+series -i -n 3 -s 2 geometric | assert_output "\
+0 1.0
+2 4.0
+4 16.0
+"
+}
+
+#
+# -m
+#
+
+test_series_m_streams_forever () {
+series -n 3 -m geometric | head -n 5 | assert_output "\
+1.0
+2.0
+4.0
+8.0
+16.0
+"
+}
+
+#
+# -n
+#
+
+test_series_n_specifies_the_number_of_steps () {
+series -n 3 geometric  | assert_output "\
+1.0
+2.0
+4.0
+"
+}
+
+#
+# -o
+#
+
+test_series_o_specifies_the_step_offset () {
+series -n 3 -o 1 geometric  | assert_output "\
+2.0
+4.0
+8.0
+"
+}
+
+#
+# -r
+#
+
+test_series_r_specifies_the_output_precision () {
+series -n 3 -r 0 "linear 2 1" "geometric 2 3" "fibonacci"  | assert_output "\
+1 2 0
+3 6 1
+5 18 1
+"
+}
+
+#
+# -s
+#
+
+test_series_s_specifies_the_step_size () {
+series -n 3 -s 2 geometric  | assert_output "\
+1.0
+4.0
+16.0
+"
+}
+
+. ts

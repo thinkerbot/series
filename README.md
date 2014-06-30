@@ -1,38 +1,21 @@
-Series
-==============================
+series(1) -- generate series data
+=============================================
 
-Generate series data.
+## SYNOPSIS
 
-Description
----------------
+`series` [options] SUBCOMMANDS...
 
-The series gem provides tools to generate series data from the command line or
-in a script using a pluggable architecture (meaning you can add your own
-series generators easily).
+## DESCRIPTION
 
-Usage
----------------
+**series** generates series data.
 
-Call the series executable:
+## OPTIONS
 
-    $ series geometric 1 2
-    1
-    2
-    4
-    8
-    16
-    32
-    ...
+These options control how `series` operates:
 
-To list the available series, or to get help on an individual series:
+* `-h`:
+  Prints help.
 
-    $ series --list
-    $ series --help
-    $ series geometric --help
+## COPYRIGHT
 
-Installation
----------------
-
-Series is available as a gem.
-
-    $ gem install series
+series is Copyright (C) 2014 Simon Chiang <http://github.com/thinkerbot>

@@ -1,0 +1,18 @@
+#!/bin/bash
+. test/integration/helper
+
+test_series_fibonnaci_prints_fibonnaci_series_at_each_input_x () {
+printf "%s\n" 0 1 2 3 4 5 10 5 | series-fibonacci | transpose | assert_output "\
+0 1 1 2 3 5 55 5
+"
+}
+
+#
+# -h
+#
+
+test_series_fibonnaci_h_prints_help () {
+series-fibonacci -h | grep -q "usage: series-fibonacci"
+}
+
+. ts

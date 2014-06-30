@@ -1,0 +1,6 @@
+# Setup test paths
+export PATH="$PWD/vendor/ts/bin:$PATH"
+
+transpose () {
+  tr "\n" " " | sed -e "s/ $//"
+}

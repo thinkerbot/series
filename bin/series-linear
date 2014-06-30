@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+begin
+  require 'optparse'
+  require 'series'
+  require 'series/command'
+
+  options = {}
+  OptionParser.new do |opts|
+    opts.banner = %{
+usage: series-linear [options] [M] [B]
+
+  Prints linear series value at every input x.
+
+options:
+}.lstrip
+
+    opts.on("-h", "--help", "print this help") do
+      puts opts
+      puts
+      puts Series.version
+      exit
+    end
+  end.parse!
+
+  m, b = ARGV.shift(2)
+
+  unless ARGV.empty?
+    $stderr.puts "extra arguments"
+    exit 1
+  end
+
+  m = m ? Float(m) : 0.0
+  b = b ? Float(b) : 0.0
+  Series::Command.loop do |x|
+    m * x + b
+  end
+
+rescue Interrupt
+  exit 130
+rescue Errno::EPIPE
+  exit 0
+end
