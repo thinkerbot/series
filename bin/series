@@ -10,6 +10,7 @@ begin
     :line_sep  => "\n",
     :print_step_indexes => false,
     :precision => false,
+    :unbuffer => false,
   )
   OptionParser.new do |opts|
     opts.banner = %{
@@ -58,10 +59,18 @@ options:
     opts.on("-s", "--step-size NUM", "the step size (#{options[:step_size]})") do |value|
       options[:step_size] = value.to_i
     end
+
+    opts.on("-u", "--[no-]unbuffer", "unbuffer output") do |value|
+      options[:unbuffer] = value
+    end
   end.parse!
 
   commands = ARGV.dup; ARGV.clear
   readers, writers = [], []
+
+  if options[:unbuffer]
+    $stdout.sync = true
+  end
 
   if print_step_indexes = options[:print_step_indexes]
     r, w = IO.pipe
