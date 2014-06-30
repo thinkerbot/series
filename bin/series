@@ -7,6 +7,7 @@ begin
 
   options = Series::Command.options(
     :field_sep => " ",
+    :line_sep  => "\n",
     :print_step_indexes => false,
   )
   OptionParser.new do |opts|
@@ -20,6 +21,10 @@ options:
 
     opts.on("-F", "--field-sep SEP", "field separator (#{options[:field_sep].inspect})") do |value|
       options[:field_sep] = value
+    end
+
+    opts.on("-L", "--line-sep SEP", "line separator (#{options[:line_sep].inspect})") do |value|
+      options[:line_sep] = value
     end
 
     opts.on("-h", "--help", "print this help") do
@@ -76,6 +81,7 @@ options:
   end
 
   field_sep = options[:field_sep]
+  line_sep = options[:line_sep]
 
   loop do
     fields = []
@@ -87,7 +93,7 @@ options:
       end
     end
     print fields.join(field_sep)
-    print "\n"
+    print line_sep
   end
 
 rescue Interrupt

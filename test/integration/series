@@ -32,6 +32,14 @@ series -F ":" "linear 2 1" "geometric 2 3" "fibonacci"  | assert_output "\
 }
 
 #
+# -L
+#
+
+test_series_L_specifies_the_line_sep () {
+series -n 3 -L " " geometric | assert_output "1.0 2.0 4.0 "
+}
+
+#
 # -h
 #
 
