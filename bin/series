@@ -6,7 +6,8 @@ begin
   require 'shellwords'
 
   options = Series::Command.options(
-    :field_sep => " "
+    :field_sep => " ",
+    :print_step_indexes => false,
   )
   OptionParser.new do |opts|
     opts.banner = %{
@@ -28,6 +29,10 @@ options:
       exit
     end
 
+    opts.on("-i", "--[no-]step-index", "print step index") do |value|
+      options[:print_step_indexes] = value
+    end
+
     opts.on("-n", "--n-steps NUM", "number of steps in series (#{options[:n_steps]})") do |value|
       options[:n_steps] = value.to_i
     end
@@ -42,36 +47,47 @@ options:
   end.parse!
 
   commands = ARGV.dup; ARGV.clear
+  readers, writers = [], []
 
-  pipes = commands.map do |command_str|
+  if print_step_indexes = options[:print_step_indexes]
+    r, w = IO.pipe
+    readers << r
+    writers << w
+  end
+
+  commands.each_with_index do |command_str, index|
     command, *args = Shellwords.shellsplit(command_str)
     args.unshift("series-#{command}")
-    IO.popen(args, "r+")
+    io = IO.popen(args, "r+")
+    readers << io
+    writers << io
   end
 
   Thread.new do
     driver = Series::Command.driver(options)
     driver.each do |input|
-      pipes.each do |io|
+      writers.each do |io|
         io.puts input
       end
     end
-    pipes.each do |io|
+    writers.each do |io|
       io.close_write
     end
   end
 
   field_sep = options[:field_sep]
+
   loop do
-    line = []
-    pipes.map do |io|
+    fields = []
+    readers.each do |io|
       if output = io.gets
-        line << output.chomp("\n")
+        fields << output.chomp("\n")
       else
         exit
       end
     end
-    puts line.join(field_sep)
+    print fields.join(field_sep)
+    print "\n"
   end
 
 rescue Interrupt

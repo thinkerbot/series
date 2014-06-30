@@ -40,6 +40,18 @@ series -h | grep -q "usage: series"
 }
 
 #
+# -i
+#
+
+test_series_i_prints_the_step_index () {
+series -i -n 3 -s 2 geometric | assert_output "\
+0 1.0
+2 4.0
+4 16.0
+"
+}
+
+#
 # -n
 #
 
