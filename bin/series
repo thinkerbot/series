@@ -9,6 +9,7 @@ begin
     :field_sep => " ",
     :line_sep  => "\n",
     :print_step_indexes => false,
+    :precision => false,
   )
   OptionParser.new do |opts|
     opts.banner = %{
@@ -44,6 +45,10 @@ options:
 
     opts.on("-o", "--offset NUM", "step offset (#{options[:offset]})") do |value|
       options[:offset] = value.to_i
+    end
+
+    opts.on("-r", "--round NUM", "round to precision") do |value|
+      options[:precision] = value.to_i
     end
 
     opts.on("-s", "--step-size NUM", "the step size (#{options[:step_size]})") do |value|
@@ -82,12 +87,17 @@ options:
 
   field_sep = options[:field_sep]
   line_sep = options[:line_sep]
+  precision = options[:precision]
 
   loop do
     fields = []
     readers.each do |io|
       if output = io.gets
-        fields << output.chomp("\n")
+        if precision
+          fields << Float(output).round(precision)
+        else
+          fields << output.chomp("\n")
+        end
       else
         exit
       end

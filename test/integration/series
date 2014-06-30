@@ -84,6 +84,18 @@ series -n 3 -o 1 geometric  | assert_output "\
 }
 
 #
+# -r
+#
+
+test_series_r_specifies_the_output_precision () {
+series -n 3 -r 0 "linear 2 1" "geometric 2 3" "fibonacci"  | assert_output "\
+1 2 0
+3 6 1
+5 18 1
+"
+}
+
+#
 # -s
 #
 
