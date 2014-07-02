@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+begin
+  require 'optparse'
+  require 'series'
+  require 'series/command'
+
+  options = {}
+  OptionParser.new do |opts|
+    opts.banner = %{
+usage: series-periodic [options] [PERIOD_IN_STEPS] [AMPLITUDE] [PHASE_IN_STEPS_TO_ADVANCE]
+
+  Prints periodic series value at every input x.
+
+options:
+}.lstrip
+
+    opts.on("-h", "--help", "print this help") do
+      puts opts
+      puts
+      puts Series.version
+      exit
+    end
+  end.parse!
+
+  f, a, p = ARGV.shift(3)
+
+  unless ARGV.empty?
+    $stderr.puts "extra arguments"
+    exit 1
+  end
+
+  a = a ? Float(a) : 1.0
+  f = f ? 2 / Float(f) : 0.25
+  p = p ? -1 * f * Math::PI * Float(p) : 0.0
+
+  # 8 steps = 2 pi
+  # 0.25 pi / step 
+  Series::Command.loop do |x|
+    a * Math.sin(f * x * Math::PI - p)
+  end
+
+rescue Interrupt
+  exit 130
+rescue Errno::EPIPE
+  exit 0
+end
