@@ -11,6 +11,7 @@ begin
     :print_step_indexes => false,
     :precision => false,
     :unbuffer => false,
+    :headers => false,
   )
   OptionParser.new do |opts|
     opts.banner = %{
@@ -27,6 +28,10 @@ options:
 
     opts.on("-L", "--line-sep SEP", "line separator (#{options[:line_sep].inspect})") do |value|
       options[:line_sep] = value
+    end
+
+    opts.on("-H", "--header-line", "prints header line") do
+      options[:headers] = true
     end
 
     opts.on("-h", "--help", "print this help") do
@@ -66,7 +71,7 @@ options:
   end.parse!
 
   commands = ARGV.dup; ARGV.clear
-  readers, writers = [], []
+  readers, writers, headers = [], [], []
 
   if options[:unbuffer]
     $stdout.sync = true
@@ -76,14 +81,18 @@ options:
     r, w = IO.pipe
     readers << r
     writers << w
+    headers << "N"
   end
 
   commands.each_with_index do |command_str, index|
-    command, *args = Shellwords.shellsplit(command_str)
+    header_command, *args = Shellwords.shellsplit(command_str)
+    header, command = header_command.split(":", 2)
+    command, header = header, "#{header}_#{index}" if command.nil?
     args.unshift("series-#{command}")
     io = IO.popen(args, "r+")
     readers << io
     writers << io
+    headers << header
   end
 
   Thread.new do
@@ -101,6 +110,11 @@ options:
   field_sep = options[:field_sep]
   line_sep = options[:line_sep]
   precision = options[:precision]
+
+  if options[:headers]
+    print headers.join(field_sep)
+    print line_sep
+  end
 
   loop do
     fields = []
