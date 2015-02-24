@@ -14,6 +14,4 @@ Gem::Specification.new do |gem|
   gem.name          = "series"
   gem.require_paths = ["lib"]
   gem.version       = Series::VERSION
-
-  gem.add_development_dependency('bundler', '~> 1.0')
 end

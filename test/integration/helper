@@ -1,4 +1,6 @@
 # Setup test paths
+. bin/series.env
+
 export PATH="$PWD/vendor/ts/bin:$PATH"
 
 transpose () {
