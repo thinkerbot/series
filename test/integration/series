@@ -40,6 +40,14 @@ series -n 3 -L " " geometric | assert_output "1.0 2.0 4.0 "
 }
 
 #
+# -l
+#
+
+test_series_l_lists_available_series () {
+series -l | grep -q "linear"
+}
+
+#
 # -H
 #
 

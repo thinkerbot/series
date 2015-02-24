@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 $:.unshift File.expand_path('../../lib', __FILE__)
-
 begin
   require 'optparse'
   require 'series'
@@ -8,6 +7,7 @@ begin
   require 'shellwords'
 
   options = Series::Command.options(
+    :mode => :generate,
     :field_sep => " ",
     :line_sep  => "\n",
     :print_step_indexes => false,
@@ -30,6 +30,10 @@ options:
 
     opts.on("-L", "--line-sep SEP", "line separator (#{options[:line_sep].inspect})") do |value|
       options[:line_sep] = value
+    end
+
+    opts.on("-l", "--list", "lists available series") do
+      options[:mode] = :list
     end
 
     opts.on("-H", "--header-line", "prints header line") do
@@ -73,6 +77,20 @@ options:
   end.parse!
 
   commands = ARGV.dup; ARGV.clear
+  mode = options[:mode]
+
+  if mode == :list
+    path = ENV['PATH'].to_s.split(":").uniq
+    prefix = "series-"
+    commands = Dir[*path.map {|dir| File.join(dir, "#{prefix}*") }]
+    commands.map do |command_file|
+      File.basename(command_file)[prefix.length, command_file.length - prefix.length]
+    end.sort.uniq.each do |command_name|
+      puts "  %s" % [command_name]
+    end
+    exit
+  end
+
   readers, writers, headers = [], [], []
 
   if options[:unbuffer]
