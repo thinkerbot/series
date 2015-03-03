@@ -7,7 +7,7 @@ begin
   require 'shellwords'
 
   options = Series::Command.options(
-    :mode => :generate,
+    :mode => :single,
     :field_sep => " ",
     :line_sep  => "\n",
     :print_step_indexes => false,
@@ -17,9 +17,9 @@ begin
   )
   OptionParser.new do |opts|
     opts.banner = %{
-usage: series [options] COMMANDS...
+usage: series [options] -- SERIES ARGS...
 
-  Generate series data from the specified subcommands.
+  Generate series data.
 
 options:
 }.lstrip
@@ -51,6 +51,10 @@ options:
       options[:print_step_indexes] = value
     end
 
+    opts.on("-M", "--multi-series", "generate multiple series (each arg is a command string)") do
+      options[:mode] = :multiple
+    end
+
     opts.on("-m", "--stream", "generate steps indefinitely") do
       options[:n_steps] = nil
     end
@@ -79,16 +83,19 @@ options:
   commands = ARGV.dup; ARGV.clear
   mode = options[:mode]
 
-  if mode == :list
+  case mode
+  when :list
     path = ENV['PATH'].to_s.split(":").uniq
     prefix = "series-"
-    commands = Dir[*path.map {|dir| File.join(dir, "#{prefix}*") }]
-    commands.map do |command_file|
+    command_files = Dir[*path.map {|dir| File.join(dir, "#{prefix}*") }]
+    command_files.map do |command_file|
       File.basename(command_file)[prefix.length, command_file.length - prefix.length]
     end.sort.uniq.each do |command_name|
       puts "  %s" % [command_name]
     end
     exit
+  when :single
+    commands = [commands.shelljoin]
   end
 
   readers, writers, headers = [], [], []
