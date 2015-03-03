@@ -95,8 +95,11 @@ options:
     end
     exit
   when :single
-    commands = [commands.shelljoin]
+    commands = [commands] unless commands.empty?
+  when :multiple
+    commands.map! {|command_str| Shellwords.shellsplit(command_str) }
   end
+  exit if commands.empty?
 
   readers, writers, headers = [], [], []
 
@@ -111,8 +114,7 @@ options:
     headers << "N"
   end
 
-  commands.each_with_index do |command_str, index|
-    header_command, *args = Shellwords.shellsplit(command_str)
+  commands.each_with_index do |(header_command, *args), index|
     header, command = header_command.split(":", 2)
     command, header = header, "#{header}_#{index}" if command.nil?
     args.unshift("series-#{command}")

@@ -1,6 +1,10 @@
 #!/bin/bash
 . test/integration/helper
 
+test_series_prints_nothing_with_no_args () {
+series | assert_output ""
+}
+
 test_series_generates_specified_series_for_8_steps_of_1 () {
 series linear 2 1 | assert_output "\
 1.0
