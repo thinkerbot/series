@@ -108,10 +108,7 @@ options:
   end
 
   if print_step_indexes = options[:print_step_indexes]
-    r, w = IO.pipe
-    readers << r
-    writers << w
-    headers << "N"
+    commands.unshift ["N:index"]
   end
 
   commands.each_with_index do |(header_command, *args), index|
