@@ -52,19 +52,6 @@ series -l | grep -q "linear"
 }
 
 #
-# -H
-#
-
-test_series_H_prints_header_line () {
-series -M -i -n 3 -H linear linear "custom:linear" | assert_output "\
-N linear_1 linear_2 custom
-0 0.0 0.0 0.0
-1 0.0 0.0 0.0
-2 0.0 0.0 0.0
-"
-}
-
-#
 # -h
 #
 
