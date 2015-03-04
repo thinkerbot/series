@@ -29,22 +29,16 @@ options:
     exit 1
   end
 
-  curr, succ, n = 0, 1, 0
-  Series::Command.loop do |x|
-    n_steps = x - n
-
-    # reset if not going forward
-    if n_steps < 0
-      curr, succ, n_steps = 0, 1, x
-    end
-
-    n_steps.times do
+  enum = Enumerator.new do |output|
+    curr, succ = 0, 1
+    output << curr
+    
+    loop do
       curr, succ = succ, curr + succ
+      output << curr
     end
-    n = x
-
-    curr
   end
+  Series::Command.loop_enum(enum)
 
 rescue Interrupt
   exit 130

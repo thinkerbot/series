@@ -50,5 +50,23 @@ module Series
         stdout.puts y
       end
     end
+
+    def loop_enum(enum, stdin = $stdin, stdout = $stdout)
+      enum_value, last_x = enum.next, 0
+      self.loop(stdin, stdout) do |x|
+        n_steps = x - last_x
+
+        # reset if not going forward
+        if n_steps < 0
+          enum.rewind
+          enum_value, last_x, n_steps = enum.next, 0, x
+        end
+
+        n_steps.times { enum_value = enum.next }
+        last_x = x
+
+        enum_value
+      end
+    end
   end
 end
