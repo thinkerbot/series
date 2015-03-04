@@ -9,7 +9,7 @@ begin
   options = {}
   OptionParser.new do |opts|
     opts.banner = %{
-usage: series-geometric [options] [A] [R]
+usage: series-geometric [options] [A=1.0] [R=2.0]
 
   Prints geometric series value at every input x.
 

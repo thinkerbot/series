@@ -9,7 +9,7 @@ begin
   options = {}
   OptionParser.new do |opts|
     opts.banner = %{
-usage: series-linear [options] [M] [B]
+usage: series-linear [options] [M=1.0] [B=0.0]
 
   Prints linear series value at every input x.
 
@@ -31,7 +31,7 @@ options:
     exit 1
   end
 
-  m = m ? Float(m) : 0.0
+  m = m ? Float(m) : 1.0
   b = b ? Float(b) : 0.0
   Series::Command.loop do |x|
     m * x + b
