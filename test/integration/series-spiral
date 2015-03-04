@@ -1,0 +1,52 @@
+#!/bin/bash
+. test/integration/helper
+
+test_series_spiral () {
+series spiral -n 25 | assert_output "\
+0 0
+-1 0
+-1 1
+0 1
+1 1
+1 0
+1 -1
+0 -1
+-1 -1
+-2 -1
+-2 0
+-2 1
+-2 2
+-1 2
+0 2
+1 2
+2 2
+2 1
+2 0
+2 -1
+2 -2
+1 -2
+0 -2
+-1 -2
+-2 -2
+"
+}
+
+test_series_spiral_print_sprial_series_at_each_input_x () {
+printf "%s\n" 0 1 2 10 2 | series-spiral | assert_output "\
+0 0
+-1 0
+-1 1
+-2 0
+-1 1
+"
+}
+
+#
+# -h
+#
+
+test_series_spiral_h_prints_help () {
+series-spiral -h | grep -q "usage: series-spiral"
+}
+
+. ts

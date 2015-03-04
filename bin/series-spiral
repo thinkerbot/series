@@ -1,0 +1,89 @@
+#!/usr/bin/env ruby
+$:.unshift File.expand_path('../../lib', __FILE__)
+
+begin
+  require 'optparse'
+  require 'series'
+  require 'series/command'
+
+  options = {}
+  OptionParser.new do |opts|
+    opts.banner = %{
+usage: series-spiral [options] [X=0] [Y=0] [DX=1] [DY=1]
+
+  Unit spiral out from a center point.
+
+options:
+}.lstrip
+
+    opts.on("-h", "--help", "print this help") do
+      puts opts
+      puts
+      puts Series.version
+      exit
+    end
+  end.parse!
+
+  x0, y0, dx, dy = ARGV; ARGV.clear
+
+  unless ARGV.empty?
+    $stderr.puts "extra arguments"
+    exit 1
+  end
+
+  x0 = x0 ? Integer(x0) : 0
+  y0 = y0 ? Integer(y0) : 0
+  dx = dx ? Integer(dx) : 1
+  dy = dy ? Integer(dy) : 1
+  
+  e = Enumerator.new do |output|
+    x, y = x0, y0
+    xmin, xmax, ymin, ymax = 0, 0, 0, 0
+
+    loop do
+      while x > xmin
+        output << [x, y]
+        x -= dx
+      end
+      xmin -= dx
+      while y < ymax
+        output << [x, y]
+        y += dy
+      end
+      ymax += dy
+      while x < xmax
+        output << [x, y]
+        x += dx
+      end
+      xmax += dx
+      while y > ymin
+        output << [x, y]
+        y -= dy
+      end
+      ymin -= dy
+    end
+  end
+
+  field_sep = ENV['SERIES_FIELD_SEP'] || ' '
+  curr, n = e.next, 0
+  Series::Command.loop do |x|
+    n_steps = x - n
+
+    # reset if not going forward
+    if n_steps < 0
+      e.rewind
+      n, n_steps = 0, x
+      curr = e.next
+    end
+
+    n_steps.times { curr = e.next }
+    n = x
+
+    curr.join(field_sep)
+  end
+
+rescue Interrupt
+  exit 130
+rescue Errno::EPIPE
+  exit 0
+end
