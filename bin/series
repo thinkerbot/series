@@ -102,13 +102,18 @@ options:
     $stdout.sync = true
   end
 
-  if print_step_indexes = options[:print_step_indexes]
-    commands.unshift ["index"]
-  end
-
   field_sep = options[:field_sep]
   line_sep  = options[:line_sep]
   precision = options[:precision]
+
+  index_reader = \
+  if options[:print_step_indexes]
+    r, w = IO.pipe
+    writers << w
+    r
+  else
+    nil
+  end
   
   commands.each_with_index do |(command, *args), index|
     args.unshift("series-#{command}")
@@ -139,9 +144,17 @@ options:
         exit
       end
     end
+
     if precision
       fields.map! {|field| Float(field).round(precision) }
     end
+
+    if index_reader
+      index = index_reader.gets
+      index.chomp!("\n")
+      fields.unshift index
+    end
+
     print fields.join(field_sep)
     print line_sep
   end

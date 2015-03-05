@@ -75,6 +75,15 @@ series -i -n 3 -s 2 geometric | assert_output "\
 "
 }
 
+test_series_i_works_with_r () {
+series -i -n 3 -r 1 step 0:1.1 | assert_output "\
+0 0.0
+1 1.1
+2 2.2
+"
+}
+
+
 #
 # -M
 #
