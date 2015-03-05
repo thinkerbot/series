@@ -36,7 +36,7 @@ options:
   dx = dx ? Integer(dx) : 1
   dy = dy ? Integer(dy) : 1
   
-  field_sep = ENV['SERIES_FIELD_SEP'] || ' '
+  field_sep = ','
   enum = Enumerator.new do |output|
     x, y = x0, y0
     xmin, xmax, ymin, ymax = 0, 0, 0, 0

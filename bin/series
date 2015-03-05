@@ -110,7 +110,6 @@ options:
   line_sep  = options[:line_sep]
   precision = options[:precision]
   
-  ENV['SERIES_FIELD_SEP'] = field_sep
   commands.each_with_index do |(command, *args), index|
     args.unshift("series-#{command}")
     io = IO.popen(args, "r+")
@@ -133,15 +132,15 @@ options:
   loop do
     fields = []
     readers.each do |io|
-      if output = io.gets
-        if precision
-          fields << output.split(field_sep).map {|str| Float(str).round(precision) }.join(field_sep)
-        else
-          fields << output.chomp("\n")
-        end
+      if line = io.gets
+        line.chomp!("\n")
+        fields.concat line.split(',')
       else
         exit
       end
+    end
+    if precision
+      fields.map! {|field| Float(field).round(precision) }
     end
     print fields.join(field_sep)
     print line_sep

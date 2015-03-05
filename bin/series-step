@@ -64,10 +64,9 @@ options:
     end
   end
 
-  field_sep = ENV['SERIES_FIELD_SEP'] || ' '
   enum = Enumerator.new do |output|
     walk(step_enums) do |step|
-      output << step.join(field_sep)
+      output << step.join(',')
     end
   end
 
