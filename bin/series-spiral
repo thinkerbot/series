@@ -24,7 +24,7 @@ options:
     end
   end.parse!
 
-  x0, y0, dx, dy = ARGV; ARGV.clear
+  x0, y0, dx, dy = ARGV.shift(4)
 
   unless ARGV.empty?
     $stderr.puts "extra arguments"
