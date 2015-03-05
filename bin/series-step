@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+$:.unshift File.expand_path('../../lib', __FILE__)
+
+begin
+  require 'optparse'
+  require 'series'
+  require 'series/command'
+
+  options = {}
+  OptionParser.new do |opts|
+    opts.banner = %{
+usage: series-step [options] OFFSET:STEP_SIZE:N_STEPS ...
+
+  Step in n dimensions. Used to produce index combinations.
+
+    series -m step 0:1:2 0:1:2 0:1:2
+    # 0 0 0
+    # 0 0 1
+    # 0 1 0
+    # 0 1 1
+    # 1 0 0
+    # 1 0 1
+    # 1 1 0
+    # 1 1 1
+
+options:
+}.lstrip
+
+    opts.on("-h", "--help", "print this help") do
+      puts opts
+      puts
+      puts Series.version
+      exit
+    end
+  end.parse!
+
+  step_defs = ARGV.dup; ARGV.clear
+  step_enums = step_defs.map do |step_def|
+    offset, step_size, n_steps = step_def.split(':', 3)
+
+    offset    = offset ? Integer(offset) : 0
+    step_size = step_size ? Integer(step_size) : 1
+    n_steps   = n_steps ? Integer(n_steps) : nil
+
+    Series::Command.driver(
+      :step_size => step_size,
+      :offset    => offset,
+      :n_steps   => n_steps,
+    )
+  end
+
+  def walk(enums, step = [], &block)
+    if enums.empty?
+      yield step
+    else
+      curr, *succ = enums
+      curr.rewind
+
+      curr.each do |value|
+        step.push value
+        walk(succ, step, &block)
+        step.pop
+      end
+    end
+  end
+
+  field_sep = ENV['SERIES_FIELD_SEP'] || ' '
+  enum = Enumerator.new do |output|
+    walk(step_enums) do |step|
+      output << step.join(field_sep)
+    end
+  end
+
+  Series::Command.loop_enum(enum)
+
+rescue Interrupt
+  exit 130
+rescue Errno::EPIPE
+  exit 0
+end

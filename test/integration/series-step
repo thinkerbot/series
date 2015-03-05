@@ -1,0 +1,52 @@
+#!/bin/bash
+. test/integration/helper
+
+test_series_step () {
+series step 0:1 | assert_output "\
+0
+1
+2
+3
+4
+5
+6
+7
+"
+}
+
+test_series_step_follow_offset_step_size_and_n_steps () {
+series step 10:2:3 | assert_output "\
+10
+12
+14
+"
+}
+
+test_series_step_print_sprial_series_at_each_input_x () {
+printf "%s\n" 0 1 2 5 2 | series-step 0:1 | assert_output "\
+0
+1
+2
+5
+2
+"
+}
+
+test_series_step_supports_multiple_dimensions () {
+series step 0:1:2 0:1:2 | assert_output "\
+0 0
+0 1
+1 0
+1 1
+"
+}
+
+#
+# -h
+#
+
+test_series_step_h_prints_help () {
+series-step -h | grep -q "usage: series-step"
+}
+
+. ts
