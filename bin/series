@@ -135,7 +135,7 @@ options:
     readers.each do |io|
       if output = io.gets
         if precision
-          fields << Float(output).round(precision)
+          fields << output.split(field_sep).map {|str| Float(str).round(precision) }.join(field_sep)
         else
           fields << output.chomp("\n")
         end

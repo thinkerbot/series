@@ -13,7 +13,7 @@ usage: series-step [options] OFFSET:STEP_SIZE:N_STEPS ...
 
   Step in n dimensions. Used to produce index combinations.
 
-    series -m step 0:1:2 0:1:2 0:1:2
+    series -r 0 -m step 0:1:2 0:1:2 0:1:2
     # 0 0 0
     # 0 0 1
     # 0 1 0
@@ -38,8 +38,8 @@ options:
   step_enums = step_defs.map do |step_def|
     offset, step_size, n_steps = step_def.split(':', 3)
 
-    offset    = offset ? Integer(offset) : 0
-    step_size = step_size ? Integer(step_size) : 1
+    offset    = offset ? Float(offset) : 0.0
+    step_size = step_size ? Float(step_size) : 1.0
     n_steps   = n_steps ? Integer(n_steps) : nil
 
     Series::Command.driver(
