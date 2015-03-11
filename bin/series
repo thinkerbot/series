@@ -16,9 +16,26 @@ begin
   )
   OptionParser.new do |opts|
     opts.banner = %{
-usage: series [options] -- SERIES ARGS...
+usage: series [options] SERIES_COMMAND ARGS...
 
-  Generate series data.
+  Generates series data by passing a series index to a command that translates
+  that index to one or more values. Multiple series can be generated at the
+  same time. Common series are included by default, additional commands can be
+  added by putting them on PATH.
+
+  Generate a linear series:
+
+    series linear 1 2
+    # 2.0
+    # 3.0
+    # 4.0
+    # ...
+
+  Get help with a series command:
+  
+    series -- linear -h
+    # usage: series-linear [options] [M=1.0] [B=0.0]
+    # ...
 
 options:
 }.lstrip
