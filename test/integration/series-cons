@@ -1,0 +1,51 @@
+#!/bin/bash
+. test/integration/helper
+
+test_series_cons_print_cons_series_of_5_numbers () {
+series cons | assert_output "\
+01234
+12345
+23456
+34567
+45678
+56789
+67890
+78901
+"
+}
+
+test_series_cons_allows_override_of_width_and_charset () {
+series -n 3 cons 2 lowercase| assert_output "\
+ab
+bc
+cd
+"
+}
+
+test_series_cons_print_cons_series_at_each_input_x () {
+printf "%s\n" 0 1 2 10 2 | series-cons | assert_output "\
+01234
+12345
+23456
+01234
+23456
+"
+}
+
+#
+# -h
+#
+
+test_series_cons_h_prints_help () {
+series-cons -h | grep -q "usage: series-cons"
+}
+
+#
+# -l
+#
+
+test_series_cons_l_lists_available_character_sets () {
+series -- cons -l | grep -q 'lowercase'
+}
+
+. ts

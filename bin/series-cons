@@ -1,0 +1,77 @@
+#!/usr/bin/env ruby
+$:.unshift File.expand_path('../../lib', __FILE__)
+
+begin
+  require 'optparse'
+  require 'series'
+  require 'series/command'
+
+  options = {
+    :mode    => :generate
+  }
+  OptionParser.new do |opts|
+    opts.banner = %{
+usage: series-cons [options] [WIDTH=5] [CHARSET=numbers]
+
+  Prints a fixed width series of characters that rotates through the alphabet.
+
+options:
+}.lstrip
+
+    opts.on("-l", "--list", "list available character sets") do
+      options[:mode] = :list
+    end
+
+    opts.on("-h", "--help", "print this help") do
+      puts opts
+      puts
+      puts Series.version
+      exit
+    end
+  end.parse!
+
+  width, charset = ARGV.shift(2)
+
+  unless ARGV.empty?
+    $stderr.puts "extra arguments"
+    exit 1
+  end
+
+  mode = options[:mode]
+  charsets = {
+    'uppercase' => 'A'..'Z',
+    'lowercase' => 'a'..'z',
+    'letters' => 'A'..'z',
+    'numbers' => 0..9,
+  }
+
+  if mode == :list
+    charsets.keys.sort.each do |charset|
+      puts charset
+    end
+    exit
+  end
+
+  width = width ? Integer(width) : 5
+  charset ||= 'numbers'
+
+  unless charsets.has_key?(charset)
+    $stderr.puts "unknown charset: #{charset.inspect}"
+    exit 1
+  end
+
+  chars = charsets[charset]
+  enum  = \
+  Enumerator.new do |output|
+    chars.cycle.each_cons(width) do |cons|
+      output << cons.join('')
+    end
+  end
+
+  Series::Command.loop_enum(enum)
+
+rescue Interrupt
+  exit 130
+rescue Errno::EPIPE
+  exit 0
+end
